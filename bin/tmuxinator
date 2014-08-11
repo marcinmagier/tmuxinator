@@ -4,7 +4,9 @@ $: << File.expand_path("../../lib/", __FILE__)
 require "thor"
 require "tmuxinator"
 
-if ARGV.length == 1
+if ARGV.length == 0
+    Kernel.system("tmux new-session -As `basename $PWD`")
+elsif ARGV.length == 1
   name = ARGV[0]
 
   if Tmuxinator::Cli.new.command_list.include?(name)

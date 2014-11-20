@@ -1,4 +1,9 @@
 #!<%= ENV["SHELL"] || "/bin/bash" %>
+
+# Clear rbenv variables before starting tmux
+unset RBENV_VERSION
+unset RBENV_DIR
+
 <%= tmux %> start-server\; has-session -t <%= name %> 2>/dev/null
 
 if [ "$?" -eq 1 ]; then
@@ -12,7 +17,9 @@ if [ "$?" -eq 1 ]; then
 
   <%- if Tmuxinator::Config.version < 1.7 -%>
   # Set the default path for versions prior to 1.7
-  <%= tmux %> set-option -t <%= name %> <%= Tmuxinator::Config.default_path_option %> <%= root.shellescape -%> 1>/dev/null
+  <%- if root? -%>
+  <%= tmux %> set-option -t <%= name %> <%= Tmuxinator::Config.default_path_option %> <%= root -%> 1>/dev/null
+  <%- end -%>
   <%- end -%>
 
   # Create other windows.

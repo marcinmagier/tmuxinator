@@ -6,10 +6,10 @@ module Tmuxinator
 
     def initialize(*args)
       super
-      @command_list = %w(commands copy debug delete doctor help implode list start version)
+      @command_list = %w(commands copy debug delete doctor help implode list open start version)
     end
 
-    package_name "tmuxinator"
+    package_name "tmuxinator" unless Gem::Version.create(Thor::VERSION) < Gem::Version.create("0.18")
 
     desc "commands", "Lists commands available in tmuxinator"
 
@@ -76,14 +76,11 @@ module Tmuxinator
 
       exit!("Project #{existing} doesn't exist!") unless Tmuxinator::Config.exists?(existing)
 
-      if Tmuxinator::Config.exists?(new)
-        if yes?("#{new} already exists, would you like to overwrite it?", :red)
-          FileUtils.rm(new_config_path)
-          say "Overwriting #{new}"
-        end
+      if !Tmuxinator::Config.exists?(new) or yes?("#{new} already exists, would you like to overwrite it?", :red)
+        say "Overwriting #{new}" if Tmuxinator::Config.exists?(new)
+        FileUtils.copy_file(existing_config_path, new_config_path)
       end
 
-      FileUtils.copy_file(existing_config_path, new_config_path)
       Kernel.system("$EDITOR #{new_config_path}")
     end
 
@@ -100,7 +97,7 @@ module Tmuxinator
           say "Deleted #{project}"
         end
       else
-        exit! "That file doesn't exist."
+        exit!("That file doesn't exist.")
       end
     end
 

@@ -19,7 +19,7 @@ module Tmuxinator
       end
 
       def installed?
-        Kernel.system("which tmux > /dev/null")
+        Kernel.system("type tmux > /dev/null")
       end
 
       def version
@@ -84,13 +84,9 @@ module Tmuxinator
           exit!
         end
 
-        unless project.root?
-          puts "Your project file didn't specify a 'project_root'"
-          exit!
-        end
-
         unless project.name?
           puts "Your project file didn't specify a 'project_name'"
+          exit!
         end
 
         project
